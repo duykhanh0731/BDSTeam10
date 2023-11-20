@@ -4,4 +4,5 @@ INSERT INTO `dbo.Property`(Property_Name,Property_Type_ID,Description,District_I
 - Quốc và Khánh đã code trigger Property, Full_Contract
 - Các file trigger và database đã được Quang convert mysql
 - Quang Đã edit lại code database để phù hợp với kí tự của dữ liệu truyền từ web sang mysql
-- Quang đã build web bằng PHP JS
+- Quang đã build web bằng PHP JS mysql
+- 
