@@ -1,7 +1,28 @@
 <?php
 include('connect.php');
 
-// Bây giờ bạn có thể sử dụng biến $conn để thực hiện các truy vấn đến cơ sở dữ liệu MySQL.
+// Thêm biến trang hiện tại và số bản ghi mỗi trang
+$page = isset($_GET['page']) ? $_GET['page'] : 1;
+
+// Đảm bảo trang không nhỏ hơn 1
+$page = max(1, $page);
+
+$records_per_page = 4;
+
+// Sửa truy vấn SQL để sử dụng LIMIT
+$sql = "SELECT Full_Contract_Code, Customer_Name, Customer_Address FROM `dbo.full_contract`";
+$result = $conn->query($sql);
+
+// Tính toán tổng số trang
+$total_records = $result->num_rows;
+$total_pages = ceil($total_records / $records_per_page);
+
+// Tính toán offset
+$offset = ($page - 1) * $records_per_page;
+
+// Sửa lại truy vấn SQL để sử dụng LIMIT và OFFSET
+$sql = "SELECT Full_Contract_Code, Customer_Name, Customer_Address FROM `dbo.full_contract` LIMIT $offset, $records_per_page";
+$result = $conn->query($sql);
 ?>
 
 <!DOCTYPE html>
@@ -51,39 +72,71 @@ include('connect.php');
               <p class="pay-more">thanh toán trả góp</p>
             </div>
             <div class="col-12">
-              <table class="__table-all">
-                <thead>
-                  <th>Mã hợp đồng</th>
-                  <th>Tên người mua</th>
-                  <th>Địa chỉ</th>
-                  <th></th>
-                </thead>
-                <tbody>
-                <?php
-$sql = "SELECT Full_Contract_Code, Customer_Name, Customer_Address FROM `dbo.full_contract`"; 
-$result = $conn->query($sql);
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        echo "<tr>";
-        echo "<td>" . $row["Full_Contract_Code"] . "</td>";
-        echo "<td>" . $row["Customer_Name"] . "</td>";
-        echo "<td>" . $row["Customer_Address"] . "</td>";
-        echo "<td>";
-        echo "<img src='img/Edit.jpg' alt='' class='update'>";
-        echo "<img src='img/download-pdf-icon.png' alt='' class='print'>";
-        echo "</td>";
-        echo "</tr>";
-    }
-} else {
-    echo "Không có dữ liệu.";
-}
+        <table class="__table-all">
+            <thead>
+                <th>Mã hợp đồng</th>
+                <th>Tên người mua</th>
+                <th>Địa chỉ</th>
+                <th></th>
+            </thead>
+            <tbody>
+            <?php
+            // Số lượng bản ghi
+            $total_records = $result->num_rows;
 
+            // Thêm biến để đếm số bản ghi
+            $count = 1;
 
-// Đóng kết nối đến MySQL
-  ?>
-                </tbody>
-              </table>
-            </div>
+            // Sử dụng while để lặp qua dữ liệu
+            while ($row = $result->fetch_assoc()) {
+                echo "<tr>";
+                echo "<td>" . $row["Full_Contract_Code"] . "</td>";
+                echo "<td>" . $row["Customer_Name"] . "</td>";
+                echo "<td>" . $row["Customer_Address"] . "</td>";
+                echo "<td>";
+                echo "<img src='img/Edit.jpg' alt='' class='update'>";
+                echo "<img src='img/download-pdf-icon.png' alt='' class='print'>";
+                echo "</td>";
+                echo "</tr>";
+
+                // Tăng biến đếm
+                $count++;
+
+                // Kiểm tra nếu đếm đủ số bản ghi, thoát vòng lặp
+                if ($count > $records_per_page) {
+                    break;
+                }
+            }
+            ?>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Hiển thị nút Previous và Next -->
+    <div class='pagination'>
+        <?php
+        // Hiển thị nút Previous và Next
+        
+        // Hiển thị nút Previous
+        if ($page > 1) {
+            echo "<a href='?page=" . ($page - 1) . "'>&laquo; Previous</a>";
+        }
+
+        // Hiển thị các trang
+        for ($i = 1; $i <= $total_pages; $i++) {
+            // Thêm class 'active' cho trang hiện tại
+            $active_class = ($i == $page) ? 'class="active"' : '';
+
+            echo "<a href='?page=$i' $active_class>$i</a>";
+        }
+
+        // Hiển thị nút Next
+        if ($page < $total_pages) {
+            echo "<a href='?page=" . ($page + 1) . "'>Next &raquo;</a>";
+        }
+        echo '</div>';
+        ?>
+    </div>
           </div>
         </div>
       </div>

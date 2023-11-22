@@ -4,6 +4,7 @@ include('connect.php');
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Receive data from the form
     $user = isset($_POST['user']) ? $_POST['user'] : '';
+    var_dump($user);    
     $custom_bth = isset($_POST['name-bth']) ? $_POST['name-bth'] : '';
     $ssn = isset($_POST['ssn']) ? $_POST['ssn'] : '';
     $address = isset($_POST['address']) ? $_POST['address'] : '';
@@ -13,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $deposit = isset($_POST['deposit']) ? $_POST['deposit'] : '';   
     $remain = isset($_POST['remain']) ? $_POST['remain'] : '';
     $status = isset($_POST['status']) ? $_POST['status'] : '';
-    
+
  
     // Use prepared statement to prevent SQL injection
     $sql = "INSERT INTO `dbo.full_contract` (Full_Contract_Code, Customer_Name, Year_Of_Birth, SSN, Customer_Address, Mobile, Property_ID, Date_Of_Contract, Price, Deposit, Remain, Status) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_DATE, ?, ?, ?, ?)";

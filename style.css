@@ -213,3 +213,36 @@ p {
   width: 70px;
   cursor: pointer;
 }
+
+.pagination {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.pagination a {
+  display: inline-block;
+  padding: 8px 16px;
+  margin: 0 4px;
+  text-decoration: none;
+  border: 1px solid #007bff;
+  border-radius: 3px;
+  color: #007bff;
+}
+
+.pagination a.active, .pagination a:hover {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.pagination a.disabled {
+  color: #ccc;
+  pointer-events: none;
+}
+
+.pagination span {
+  display: inline-block;
+  padding: 8px 16px;
+  margin: 0 4px;
+  color: #555;
+}
+

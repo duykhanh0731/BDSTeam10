@@ -1,30 +1,24 @@
 DELIMITER //
 CREATE TRIGGER TG_Full_Contract_INSERT_AUTOCODE
 BEFORE INSERT ON `dbo.full_contract` FOR EACH ROW
-BEGIN
-    DECLARE NAMHT_PARAM VARCHAR(2);
-    DECLARE THANGHT_PARAM VARCHAR(2);
-    DECLARE MSHD_PREFIX_PARAM VARCHAR(4);
+BEGIN 
+    DECLARE NAMHT VARCHAR(2);
+    DECLARE THANGHT VARCHAR(2);
+    DECLARE MSBDS VARCHAR(11);
     DECLARE MAX_VAL INT;
 
-    -- Get the current maximum value for the first 4 digits
-    SELECT COALESCE(MAX(CAST(SUBSTRING(Full_Contract_Code, 1, 4) AS SIGNED)), 0) INTO MAX_VAL
-    FROM `dbo.full_contract`;
+    SET NAMHT = CONVERT(RIGHT(YEAR(CURDATE()), 2), UNSIGNED);
+    SET THANGHT = CONVERT(LPAD(MONTH(CURDATE()), 2, '0'), UNSIGNED);
 
-    -- Increment the value
-    SET MAX_VAL = MAX_VAL + 1;
+    IF EXISTS (SELECT 1 FROM `dbo.Full_Contract` WHERE SUBSTRING(Full_Contract_Code, 5, 2) = NAMHT) THEN
+        SET MAX_VAL = (SELECT MAX(RIGHT(Full_Contract_Code, 4)) FROM `dbo.Full_Contract` WHERE SUBSTRING(Full_Contract_Code, 5, 2) = NAMHT) + 1;
+    ELSE
+        SET MAX_VAL = 1;
+    END IF;
 
-    -- Ensure the value is padded with zeros
-    SET MSHD_PREFIX_PARAM = LPAD(MAX_VAL, 4, '0');
+    SET MSBDS = CONCAT('HD', THANGHT, NAMHT, LPAD(MAX_VAL, 4, '0'));
 
-    -- Set NAMHT_PARAM as the last two digits of the current year
-    SET NAMHT_PARAM = RIGHT(YEAR(NOW()), 2);
-
-    -- Set THANGHT_PARAM as the current month
-    SET THANGHT_PARAM = RIGHT('00' + CAST(MONTH(NOW()) AS VARCHAR(2)), 2);
-
-    -- Set the Full_Contract_Code value directly in the NEW record
-    SET NEW.Full_Contract_Code = CONCAT(LPAD(MSHD_PREFIX_PARAM, 4, '0'), 'BDS', THANGHT_PARAM, NAMHT_PARAM);
+    SET NEW.Full_Contract_Code = MSBDS;
 
 END;
 //
