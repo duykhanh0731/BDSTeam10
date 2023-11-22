@@ -4,7 +4,6 @@ include('connect.php');
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Receive data from the form
     $user = isset($_POST['user']) ? $_POST['user'] : '';
-    var_dump($user);    
     $custom_bth = isset($_POST['name-bth']) ? $_POST['name-bth'] : '';
     $ssn = isset($_POST['ssn']) ? $_POST['ssn'] : '';
     $address = isset($_POST['address']) ? $_POST['address'] : '';
